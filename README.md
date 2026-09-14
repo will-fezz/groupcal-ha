@@ -1,5 +1,7 @@
 # GroupCal for Home Assistant
 
+<img src="icon.png" alt="GroupCal for Home Assistant" width="128">
+
 Unofficial custom integration that shows each [GroupCal](https://www.groupcal.app/) group as a Home Assistant calendar entity, with create, edit and delete support.
 
 It talks to the same backend the GroupCal web app uses (`https://www.twentyfour.me/api`). The API is undocumented; every endpoint and payload here was proven against the live service before being ported.
