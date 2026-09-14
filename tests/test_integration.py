@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -12,10 +13,12 @@ from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.groupcal.api import GroupCalAuthError
+from custom_components.groupcal.api import GroupCalAuthError, GroupCalClient, LoginMaterial
 from custom_components.groupcal.const import DOMAIN
 
 from .conftest import raw_event
+
+_REAL_LOGIN = GroupCalClient.async_login  # captured before fixtures patch it
 
 LOGIN = {
     "phone_number": "+440000000000",
@@ -271,3 +274,26 @@ async def test_user_flow_rejects_bad_setup_code(hass: HomeAssistant, mock_api) -
         result = await hass.config_entries.flow.async_configure(result["flow_id"], {"setup_code": bad})
         assert result["type"] is FlowResultType.FORM
         assert result["errors"] == {"base": "invalid_setup_code"}
+
+
+async def test_login_reads_user_id_from_account_doc() -> None:
+    """The login reply has only authToken; the user id comes from the Account doc in the sync feed."""
+    calls = []
+
+    async def fake_request(self, method, route, body=None, *, auth=True):
+        calls.append(route)
+        if route == "/v1/account/login":
+            return {"Login Status": "ok", "authToken": "Bearer tok"}
+        return {
+            "results": [
+                {"doc": {"Type": "Group", "_id": "g1", "UserID": "u-9"}},
+                {"doc": {"Type": "Account", "_id": "u-9"}},
+            ]
+        }
+
+    with patch.object(GroupCalClient, "_request", fake_request):
+        client = GroupCalClient(None, LoginMaterial(**LOGIN), timezone="Europe/London")
+        await _REAL_LOGIN(client)
+    assert client.access_token == "Bearer tok"
+    assert client.user_id == "u-9"
+    assert calls == ["/v1/account/login", "/general/changes"]

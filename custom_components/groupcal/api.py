@@ -352,14 +352,30 @@ class GroupCalClient:
             if isinstance(res.get(key), str) and res[key]:
                 user_id = res[key]
                 break
-        if not token or not user_id:
-            raise GroupCalAuthError("Login response had no access token or user id")
+        if not token:
+            raise GroupCalAuthError("Login response had no access token")
         self.access_token = token
-        self.user_id = user_id
+        # The login reply carries only the token; the user id lives on the Account doc in the sync feed.
+        self.user_id = user_id or self.user_id or await self._async_fetch_user_id()
         if self._on_token_refresh:
             maybe = self._on_token_refresh(token, user_id)
             if maybe is not None:
                 await maybe
+
+    async def _async_fetch_user_id(self) -> str:
+        res = await self._request("POST", "/general/changes", {"LastUpdate": "0"})
+        profile_user = None
+        for item in (res or {}).get("results", []) if isinstance(res, dict) else []:
+            doc = item.get("doc") if isinstance(item, dict) else None
+            if not isinstance(doc, dict):
+                continue
+            if doc.get("Type") == "Account" and doc.get("_id"):
+                return str(doc["_id"])
+            if doc.get("Type") == "Profile" and doc.get("UserID"):
+                profile_user = str(doc["UserID"])
+        if profile_user:
+            return profile_user
+        raise GroupCalAuthError("Could not find the GroupCal user id after login")
 
     # -- reads -------------------------------------------------------------
 
