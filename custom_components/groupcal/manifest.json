@@ -1,0 +1,13 @@
+{
+  "domain": "groupcal",
+  "name": "GroupCal",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/",
+  "requirements": [],
+  "version": "0.1.0"
+}

@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.json.tmp
+groupcal-auth.json
+.env
+.env.*
+.venv/
+venv/
+tests/output/
+tests/*.out
+tests/*.log
+*.results.json
+live-read*.json
+.coverage
+htmlcov/

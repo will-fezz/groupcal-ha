@@ -1,0 +1,62 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect GroupCal",
+        "description": "Easiest: on a computer, log in at https://app.groupcal.app, open the browser console (F12 → Console), paste the one-line snippet from the integration's README, press Enter, then paste the result into **Setup code**. Or leave Setup code empty and fill in the four fields yourself.",
+        "data": {
+          "setup_code": "Setup code",
+          "phone_number": "Phone number (E.164, e.g. +447700900000)",
+          "device_id": "Device ID",
+          "code_provider": "Code provider",
+          "cm_token": "Verification token (cmToken)"
+        },
+        "data_description": {
+          "device_id": "The UUID the GroupCal web app generated for this login.",
+          "code_provider": "Usually \"cm\".",
+          "cm_token": "Long-lived SMS verification token. Treat it like a password.",
+          "setup_code": "The text the README snippet copied for you. Treat it like a password."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate GroupCal",
+        "description": "GroupCal rejected the saved login. Log in again at https://app.groupcal.app, run the README snippet, and paste the new setup code (or fill in the four fields).",
+        "data": {
+          "setup_code": "Setup code",
+          "phone_number": "Phone number (E.164, e.g. +447700900000)",
+          "device_id": "Device ID",
+          "code_provider": "Code provider",
+          "cm_token": "Verification token (cmToken)"
+        },
+        "data_description": {
+          "setup_code": "The text the README snippet copied for you. Treat it like a password."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "GroupCal rejected this login material.",
+      "cannot_connect": "Could not reach GroupCal.",
+      "unknown": "Unexpected error.",
+      "invalid_setup_code": "That setup code isn't complete. Run the snippet again while logged in to GroupCal, or fill in all four fields."
+    },
+    "abort": {
+      "already_configured": "This GroupCal account is already configured.",
+      "reauth_successful": "Re-authentication was successful.",
+      "wrong_account": "That login material belongs to a different GroupCal account."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "GroupCal groups",
+        "description": "Choose which GroupCal groups appear as calendars.",
+        "data": {
+          "groups": "Groups"
+        }
+      }
+    },
+    "abort": {
+      "cannot_connect": "Could not reach GroupCal to list groups."
+    }
+  }
+}
